@@ -1,4 +1,4 @@
-from tkinter import PhotoImage, Button
+from tkinter import PhotoImage, Button, Label
 """"
 Creating / initalization deck:
 """
@@ -39,6 +39,7 @@ class Decks():
         self.used_figures = []
         self.used_figures_dealer = []
         self.hidden_card_value = 0
+        self.hidden_card_name = ''
 
     def x_shift_count(self):
         if self.x_shift >= 3*130:
@@ -61,43 +62,79 @@ class Decks():
         self.used_figures_dealer = []
         self.hidden_card_value = 0
 
-
+""""
+Managing bets, money:
+"""
 class Benefits():
     def __init__(self, window):
         self.score = 0
         self.score_dealer = 0
-        self.bet_current = 0
-        self.remained_money = 1000
+        self.bet_current = 100
+        self.money_to_raise = 0
+        self.remained_money = 2000
+        self.win_flag = False
 
-        self.button_raise_1 = Button(window, text = "200 $", font = ('Times New Roman', 13), bg = 'lightgrey', borderwidth = 3, relief = 'ridge', width = 12, height = 1,
-                                    command = self.raise1)
+        # 'Bets' buttons:
+        self.button_raise_1 = Button(window, text = "200 $", font = ('Times New Roman', 13), bg = 'lightgrey', 
+                                        borderwidth = 3, relief = 'ridge', width = 12, height = 1, command = self.raise1)
         self.button_raise_1.place(x = 530, y= 180)
 
-        self.button_raise_2= Button(window, text = "100 $", font = ('Times New Roman', 13), bg = 'lightgrey', borderwidth = 3, relief = 'ridge', width = 12, height = 1,
-                                    command = self.raise2)
+        self.button_raise_2= Button(window, text = "100 $", font = ('Times New Roman', 13), bg = 'lightgrey',
+                                        borderwidth = 3, relief = 'ridge', width = 12, height = 1, command = self.raise2)
         self.button_raise_2.place(x = 530, y= 225)
 
-        self.button_raise_3= Button(window, text = "25 $", font = ('Times New Roman', 13), bg = 'white', borderwidth = 3, relief = 'ridge', width = 12, height = 1,
-                                    command = self.raise3)
+        self.button_raise_3= Button(window, text = "25 $", font = ('Times New Roman', 13), bg = 'white', 
+                                        borderwidth = 3, relief = 'solid', width = 12, height = 1, command = self.raise3)
         self.button_raise_3.place(x = 530, y= 270)
 
-        self.button_add = Button(window, text = "+", font = ('Arial', 18, 'bold'), bg = 'lightgrey', borderwidth = 2, relief = 'ridge', height = 1, width = 2)
+        # '+' ; '-' buttons:
+        self.button_add = Button(window, text = "+", font = ('Arial', 18, 'bold'), bg = 'lightgrey',
+                                        borderwidth = 2, relief = 'ridge', height = 1, width = 2, command = self.add_bet)
         self.button_add.place(x = 680, y= 180)
 
-        self.button_cut = Button(window, text = "-", font = ('Arial', 18, 'bold'), bg = 'lightgrey', borderwidth = 2, relief = 'ridge', height = 1, width = 2)
-        self.button_cut.place(x = 680, y= 255)
+        self.button_minus = Button(window, text = "-", font = ('Arial', 18, 'bold'), bg = 'lightgrey',
+                                        borderwidth = 2, relief = 'ridge', height = 1, width = 2, command = self.minus_bet)
+        self.button_minus.place(x = 680, y= 255)
+
+        self.label_bet = Label(window, text = "100 $", font = ('Times New Roman', 15), bg = 'white', borderwidth = 3, relief = 'ridge', width = 13)
+        self.label_bet.place(x = 550, y= 130)
+
+        self.label_total = Label(window, text = "2000 $", font = ('Times New Roman', 15), bg = 'white', borderwidth = 3, relief = 'ridge', width = 17)
+        self.label_total.place(x = 530, y= 350)
 
     def raise1(self):
-        self.button_raise_1.config(bg = 'white')
-        self.button_raise_2.config(bg = 'lightgrey')
-        self.button_raise_3.config(bg = 'lightgrey')
+        self.button_raise_1.config(bg = 'white', relief='solid')
+        self.button_raise_2.config(bg = 'lightgrey', relief= 'ridge')
+        self.button_raise_3.config(bg = 'lightgrey', relief='ridge')
+        self.money_to_raise = 200
 
     def raise2(self):
-        self.button_raise_1.config(bg = 'lightgrey')
-        self.button_raise_2.config(bg = 'white')
-        self.button_raise_3.config(bg = 'lightgrey')
+        self.button_raise_1.config(bg = 'lightgrey', relief = 'ridge')
+        self.button_raise_2.config(bg = 'white', relief = 'solid')
+        self.button_raise_3.config(bg = 'lightgrey', relief = 'ridge')
+        self.money_to_raise = 100
 
     def raise3(self):
-        self.button_raise_1.config(bg = 'lightgrey')
-        self.button_raise_2.config(bg = 'lightgrey')
-        self.button_raise_3.config(bg = 'white')
+        self.button_raise_1.config(bg = 'lightgrey', relief = 'ridge')
+        self.button_raise_2.config(bg = 'lightgrey', relief = 'ridge')
+        self.button_raise_3.config(bg = 'white', relief = 'solid')
+        self.money_to_raise = 25
+
+
+    def add_bet(self):
+        money = self.remained_money - self.money_to_raise
+        if money >= 0:
+            self.remained_money = money
+            self.label_total.config(text = str(self.remained_money) + ' $')
+
+            self.bet_current += self.money_to_raise
+            self.label_bet.config(text = str(self.bet_current) + ' $')
+
+    def minus_bet(self):
+        bet = self.bet_current - self.money_to_raise
+        if bet >= 0:
+            self.bet_current = bet
+            self.label_bet.config(text = str(self.bet_current) + ' $')
+
+            self.remained_money += self.money_to_raise
+            self.label_total.config(text = str(self.remained_money) + ' $')
