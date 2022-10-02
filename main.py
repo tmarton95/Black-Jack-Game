@@ -1,6 +1,6 @@
 from tkinter import*
 from tool_classes import Decks, Benefits
-from game_functions import next_card, stop_game, new_game
+from game_functions import next_card_dealer, next_card_player, stop_game, new_game
 #---------------------------------------------------------------------------------------
 """
 Initial properties:
@@ -46,7 +46,7 @@ benefits_prop = Benefits(window)
 Button properties:
 """
 button_next_card = Button(window, text = 'Next Card', font = ('Helvetia', 14), background="lightblue", 
-                    command = lambda: next_card(benefits_prop, deck_prop, canvas_main, label_score, label_score_dealer))
+                    command = lambda: [next_card_dealer(benefits_prop, deck_prop, canvas_main, label_score_dealer), next_card_player(benefits_prop, deck_prop, canvas_main, label_score)])
 button_next_card.place(x = 525, y = 8)
 
 button_stop = Button(window, text = 'Stand', font = ('Helvetia', 14), background="lightblue", width = 8, 
