@@ -41,6 +41,7 @@ class Decks():
         self.hidden_card_value = 0
         self.hidden_card_name = ''
 
+    # Shift the next card's figure:
     def x_shift_count(self):
         if self.x_shift >= 3*130:
             self.x_shift = 30
@@ -52,8 +53,8 @@ class Decks():
         else: 
             self.x_shift_dealer += 130
 
+    # Update variables:
     def new_game(self):
-        # Update variables:
         self.x_shift = 0
         self.x_shift_dealer = 0
         self.deck = self.deck_initial.copy()
