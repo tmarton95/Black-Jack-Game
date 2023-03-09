@@ -60,29 +60,25 @@ def next_card_player(benefits_prop, deck_prop, canvas_main, label_score):
 #--------------------------------------------------------------------------------
 def stop_game(benefits_prop, deck_prop, canvas_main, button_next_card, button_stop, label_score_dealer):
     # Placing remaining cards from Dealer: ---------------------------------------
-    while benefits_prop.score_dealer < 15 or 'A' in deck_prop.used_figures_dealer:
-        # Check if Dealer has Black Jack:
-        if benefits_prop.score_dealer == 21:
-            break
-        else:
-            # Place Dealer's card + update score:
-            if benefits_prop.score_dealer < 15:
-                card_dealer = random.choice(list(deck_prop.deck_dealer.items()))
-                card_name_dealer = card_dealer[1][0] + "_" + card_dealer[1][1]
-                card_pic_dealer = deck_prop.cards_pics[card_name_dealer]
-                canvas_main.create_image(70 + deck_prop.x_shift, 350, image = card_pic_dealer, anchor = 'center')
-                benefits_prop.score_dealer += card_dealer[1][-1]
+    while benefits_prop.score_dealer < 15:
+        # Place Dealer's card + update score:
+        card_dealer = random.choice(list(deck_prop.deck_dealer.items()))
+        card_name_dealer = card_dealer[1][0] + "_" + card_dealer[1][1]
+        card_pic_dealer = deck_prop.cards_pics[card_name_dealer]
+        canvas_main.create_image(70 + deck_prop.x_shift, 350, image = card_pic_dealer, anchor = 'center')
+        benefits_prop.score_dealer += card_dealer[1][-1]
 
-                # Delete Dealer's card from deck:
-                del deck_prop.deck_dealer[card_dealer[0]]
-                deck_prop.used_figures_dealer.append(card_dealer[1][0])
+        # Delete Dealer's card from deck:
+        del deck_prop.deck_dealer[card_dealer[0]]
+        deck_prop.used_figures_dealer.append(card_dealer[1][0])
 
-            # Modify Dealer's score:
-            if benefits_prop.score_dealer > 21 and 'A' in deck_prop.used_figures_dealer:
-                benefits_prop.score_dealer -= 10
-                deck_prop.used_figures_dealer.remove('A')
-            # Plot score:
-            label_score_dealer.config(text = f"Score: ? + {str(benefits_prop.score_dealer - deck_prop.hidden_card_value)}")
+        # Modify Dealer's score:
+        if benefits_prop.score_dealer > 21 and 'A' in deck_prop.used_figures_dealer:
+            benefits_prop.score_dealer -= 10
+            deck_prop.used_figures_dealer.remove('A')
+        # Plot score:
+        label_score_dealer.config(text = f"Score: ? + {str(benefits_prop.score_dealer - deck_prop.hidden_card_value)}")
+        print(benefits_prop.score_dealer)
     #-------------------------------------------------------------------------
     # Show hidden card + score label update
     card_pic_hidden = deck_prop.cards_pics[deck_prop.hidden_card_name]
@@ -112,9 +108,11 @@ def stop_game(benefits_prop, deck_prop, canvas_main, button_next_card, button_st
             benefits_prop.win_flag = True
 
     # When we are above 21 (and also Dealer):
-    if benefits_prop.score_dealer > 21 and benefits_prop.score > 21 and (
-        benefits_prop.score_dealer < benefits_prop.score):
-        benefits_prop.win_flag = True
+    if benefits_prop.score_dealer > 21 and benefits_prop.score > 21:
+        if benefits_prop.score_dealer < benefits_prop.score:
+            benefits_prop.win_flag = True
+        elif benefits_prop.score_dealer == benefits_prop.score:
+            benefits_prop.win_flag = None
 
     # Update game status: ---------------------
     if benefits_prop.win_flag:
@@ -140,6 +138,7 @@ def new_game(button_next_card, button_stop, canvas_main, deck_prop, benefits_pro
     button_next_card.config(state = "normal")
     button_stop.config(state = "normal")
     canvas_main.delete("all")
+    canvas_main.create_line(5, 215, 511, 215, width = 2, fill = 'darkgrey')
     deck_prop.new_game()
     benefits_prop.score = 0
     benefits_prop.score_dealer = 0
